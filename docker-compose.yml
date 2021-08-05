@@ -1,0 +1,44 @@
+version: '3.1'
+
+services:
+
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+
+  bot:
+    build:
+      context: ""
+      dockerfile: Dockerfile.bot
+    command: [ "/usr/src/bot/wait-for-it.sh", "db:5432", "--", "python3.8", "./app.py" ]
+    env_file:
+      .env
+    depends_on:
+      - db
+    restart: always
+    volumes:
+      - ./bot:/usr/src/bot
+
+  notifier:
+    build:
+      context: ""
+      dockerfile: Dockerfile.notifier
+    command: [ "/usr/src/notifier/wait-for-it.sh", "db:5432", "--", "python3.8", "./main.py" ]
+    env_file:
+      .env
+    volumes:
+      - ./notifier:/usr/src/notifier
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    container_name: database
+    image: postgres:13
+    env_file:
+      - ".env"
+    restart: always
+    ports:
+      - "5432:5432"
