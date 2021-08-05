@@ -4,7 +4,7 @@ from aiogram import types
 from asyncpg import Connection
 from asyncpg.exceptions import UniqueViolationError
 
-from bot.loader import db
+from loader import db
 
 
 class DBCommands:
